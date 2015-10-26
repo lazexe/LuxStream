@@ -4,6 +4,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -39,13 +40,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initClickListener() {
-        videoView.setOnClickListener(new View.OnClickListener() {
+        videoView.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                if (videoView.isPlaying())
+            public boolean onTouch(View v, MotionEvent event) {
+                if (videoView.isPlaying()) {
                     videoView.pause();
-                else
-                    videoView.resume();
+                } else {
+                    videoView.start();
+                }
+                return false;
             }
         });
     }
