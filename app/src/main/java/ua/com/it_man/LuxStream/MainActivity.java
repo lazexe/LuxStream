@@ -2,6 +2,7 @@ package ua.com.it_man.LuxStream;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -126,6 +127,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (clickedId == R.id.share_button) {
                     shareApplication();
                 }
+                if (clickedId == R.id.rate_button) {
+                    rateApplication();
+                }
             } else {
                 startStreamVideo();
                 hideStatusButton();
@@ -142,6 +146,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
         shareIntent.setType("text/plain");
         startActivity(shareIntent);
+    }
+
+    private void rateApplication() {
+        Uri uri = Uri.parse("market://details?id=" + getPackageName());
+        Intent playMarketIntent = new Intent(Intent.ACTION_VIEW, uri);
+        try {
+            startActivity(playMarketIntent);
+        } catch (ActivityNotFoundException exception) {
+            startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("http://play.google.com/store/apps/details?id="
+                    + getPackageName())));
+        }
     }
 
     private void showStatusButton() {
