@@ -8,11 +8,12 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import android.widget.VideoView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String LUX_VIDEO_STREAM_ADDRESS =
             "http://stream1.luxnet.ua/luxstudio/smil:luxstudio.stream.smil/playlist.m3u8";
@@ -23,25 +24,31 @@ public class MainActivity extends AppCompatActivity {
     private static final String IS_PLAYING_KEY = "IS_PLAYING";
 
     private VideoView videoView;
-    private ImageButton statusButton;
+    private ImageButton statusImageButton;
+    private Button rateButton;
+    private Button shareButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(ua.com.it_man.LuxStream.R.layout.activity_main);
         videoView = (VideoView) findViewById(ua.com.it_man.LuxStream.R.id.video_view);
-        statusButton = (ImageButton) findViewById(R.id.status_button);
-        initStatusButtonClickListener();
+        statusImageButton = (ImageButton) findViewById(R.id.status_button);
+        rateButton = (Button) findViewById(R.id.rate_button);
+        shareButton = (Button) findViewById(R.id.share_button);
+        initActionButtonClickListener();
         initTouchListener();
         videoView.setOnErrorListener(new MediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(MediaPlayer mp, int what, int extra) {
                 switch (what) {
                     case MediaPlayer.MEDIA_ERROR_UNKNOWN:
-                        Toast.makeText(getApplicationContext(), "Unknown error!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Unknown error!", Toast.LENGTH_SHORT)
+                                .show();
                         return true;
                     case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
-                        Toast.makeText(getApplicationContext(), "Server died!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Server died!", Toast.LENGTH_SHORT)
+                                .show();
                         return true;
                     default:
                         return false;
@@ -51,20 +58,24 @@ public class MainActivity extends AppCompatActivity {
         restoreStreamerState(savedInstanceState);
     }
 
-    private void initStatusButtonClickListener() {
-        statusButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                handleScreenTouch();
-            }
-        });
+
+    @Override
+    public void onClick(View v) {
+        handleScreenTouch(v);
     }
+
+    private void initActionButtonClickListener() {
+        statusImageButton.setOnClickListener(this);
+        rateButton.setOnClickListener(this);
+        shareButton.setOnClickListener(this);
+    }
+
 
     private void initTouchListener() {
         videoView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                handleScreenTouch();
+                handleScreenTouch(v);
                 return false;
             }
         });
@@ -90,8 +101,8 @@ public class MainActivity extends AppCompatActivity {
             if (isPlaying)
                 startStreamVideo();
         }
-        statusButton.setImageResource(R.drawable.ic_action_pause);
-        statusButton.setVisibility(View.VISIBLE);
+        statusImageButton.setImageResource(R.drawable.ic_action_pause);
+        statusImageButton.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -102,34 +113,28 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void handleScreenTouch() {
+    private void handleScreenTouch(View view) {
         if (videoView.isPlaying()) {
             videoView.pause();
             showStatusButton();
+            showView(rateButton);
+            showView(shareButton);
         } else {
             startStreamVideo();
             hideStatusButton();
+            hideView(rateButton);
+            hideView(shareButton);
         }
     }
 
     private void showStatusButton() {
-        statusButton.setImageResource(R.drawable.ic_action_pause);
-        statusButton.animate().setDuration(FADE_OUT_TIME).alpha(1f).setListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                statusButton.setVisibility(View.VISIBLE);
-            }
-        });
+        statusImageButton.setImageResource(R.drawable.ic_action_pause);
+        showView(statusImageButton);
     }
 
     private void hideStatusButton() {
-        statusButton.setImageResource(R.drawable.ic_action_play);
-        statusButton.animate().setDuration(FADE_IN_TIME).alpha(0f).setListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                statusButton.setVisibility(View.INVISIBLE);
-            }
-        });
+        statusImageButton.setImageResource(R.drawable.ic_action_play);
+        hideView(statusImageButton);
     }
 
     private void startStreamVideo() {
@@ -137,4 +142,25 @@ public class MainActivity extends AppCompatActivity {
         videoView.setVideoURI(videoUri);
         videoView.start();
     }
+
+    private void showView(final View view) {
+        view.animate().setDuration(FADE_OUT_TIME).alpha(1f)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        view.setVisibility(View.VISIBLE);
+                    }
+                });
+    }
+
+    private void hideView(final View view) {
+        view.animate().setDuration(FADE_IN_TIME).alpha(0f)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        view.setVisibility(View.INVISIBLE);
+                    }
+                });
+    }
+
 }
