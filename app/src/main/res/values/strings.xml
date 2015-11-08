@@ -2,4 +2,7 @@
     <string name="app_name">Lux Stream</string>
     <string name="rate_us">Rate us</string>
     <string name="share_to_friends">Share to friends</string>
+    <string name="share_message">I'm using Lux Stream. This is Android application that
+        display the web camera of the #luxfm radio station. #люксФМ
+    </string>
 </resources>

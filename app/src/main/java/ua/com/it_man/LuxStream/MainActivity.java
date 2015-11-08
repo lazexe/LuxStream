@@ -2,6 +2,7 @@ package ua.com.it_man.LuxStream;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -120,11 +121,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             showView(rateButton);
             showView(shareButton);
         } else {
-            startStreamVideo();
-            hideStatusButton();
-            hideView(rateButton);
-            hideView(shareButton);
+            int clickedId = view.getId();
+            if (clickedId != R.id.video_view && clickedId != R.id.status_button) {
+                if (clickedId == R.id.share_button) {
+                    shareApplication();
+                }
+            } else {
+                startStreamVideo();
+                hideStatusButton();
+                hideView(rateButton);
+                hideView(shareButton);
+            }
         }
+    }
+
+    private void shareApplication() {
+        String shareMessage = getString(R.string.share_message);
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
+        shareIntent.setType("text/plain");
+        startActivity(shareIntent);
     }
 
     private void showStatusButton() {
@@ -162,5 +179,4 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 });
     }
-
 }
